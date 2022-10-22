@@ -1,36 +1,29 @@
-//
-//    rfnoc-hls-neuralnet: Vivado HLS code for neural-net building blocks
-//
-//    Copyright (C) 2017 EJ Kreinar
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <vector>
 #include <map>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 
 #include "firmware/myproject.h"
 #include "firmware/nnet_utils/nnet_helpers.h"
 
+#include <mc_scverify.h>
+
 //hls-fpga-machine-learning insert bram
 
-#define CHECKPOINT 5000
+////hls-fpga-machine-learning insert declare weights
+//weight2_t w2[1792];
+//bias2_t b2[128];
+//batch_normalization_scale_t s4[128];
+//batch_normalization_bias_t b4[128];
+//weight6_t w6[384];
+//bias6_t b6[3];
+
+#define CHECKPOINT 1
 
 namespace nnet {
     bool trace_enabled = true;
@@ -38,7 +31,20 @@ namespace nnet {
     size_t trace_type_size = sizeof(double);
 }
 
-int main(int argc, char **argv)
+template <class T, int N>
+unsigned argmax(T args[N]) {
+  unsigned max_idx = 0;
+  T max;
+  for (unsigned i = 0; i < N; i++) {
+    if(args[i] > max) {
+      max = args[i];
+      max_idx = i;
+    }
+  }
+  return max_idx;
+}
+
+CCS_MAIN(int argc, char *argv[])
 {
   //load input data from text file
   std::ifstream fin("tb_data/tb_input_features.dat");
@@ -52,13 +58,25 @@ int main(int argc, char **argv)
 #endif
   std::ofstream fout(RESULTS_LOG);
 
+//#ifndef __SYNTHESIS__
+//    static bool loaded_weights = false;
+//    if (!loaded_weights) {
+//        //hls-fpga-machine-learning insert load weights
+//        nnet::load_weights_from_txt<weight2_t, 1792>(w2, "w2.txt");
+//        nnet::load_weights_from_txt<bias2_t, 128>(b2, "b2.txt");
+//        nnet::load_weights_from_txt<weight5_t, 384>(w5, "w5.txt");
+//        nnet::load_weights_from_txt<bias5_t, 3>(b5, "b5.txt");
+//        loaded_weights = true;
+//    }
+//#endif
+
   std::string iline;
   std::string pline;
-  int e = 0;
+  unsigned errors = 0;
+  unsigned outputs = 0;
 
   if (fin.is_open() && fpr.is_open()) {
     while ( std::getline(fin,iline) && std::getline (fpr,pline) ) {
-      if (e % CHECKPOINT == 0) std::cout << "Processing input " << e << std::endl;
       char* cstr=const_cast<char*>(iline.c_str());
       char* current;
       std::vector<float> in;
@@ -78,29 +96,34 @@ int main(int argc, char **argv)
       //hls-fpga-machine-learning insert data
       input_t input_1[N_INPUT_1_1];
       nnet::copy_data<float, input_t, 0, N_INPUT_1_1>(in, input_1);
-      result_t layer7_out[N_LAYER_5];
+      result_t layer6_out[N_LAYER_5];
 
       //hls-fpga-machine-learning insert top-level-function
       unsigned short size_in1,size_out1;
-      myproject(input_1,layer7_out,size_in1,size_out1);
+      myproject(input_1,layer6_out);
 
-      if (e % CHECKPOINT == 0) {
-        std::cout << "Predictions" << std::endl;
-        //hls-fpga-machine-learning insert predictions
-        for(int i = 0; i < N_LAYER_5; i++) {
-          std::cout << pr[i] << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "Quantized predictions" << std::endl;
-        //hls-fpga-machine-learning insert quantized
-        nnet::print_result<result_t, N_LAYER_5>(layer7_out, std::cout, true);
-      }
-      e++;
+      std::cout << "INFO: Expected prediction: ";
+      //hls-fpga-machine-learning insert predictions
+      unsigned expected_prediction = pr[0];
+      std::cout << expected_prediction << " ";
+      std::cout << std::endl;
+      std::cout << "INFO: Model prediction   : ";
+      unsigned model_prediction = argmax<result_t, N_LAYER_5>(layer6_out);
+      std::cout << model_prediction << " | ";
+      //hls-fpga-machine-learning insert quantized
+      nnet::print_result<result_t, N_LAYER_5>(layer6_out, std::cout, true);
 
       //hls-fpga-machine-learning insert tb-output
-      nnet::print_result<result_t, N_LAYER_5>(layer7_out, fout);
-
+      nnet::print_result<result_t, N_LAYER_5>(layer6_out, fout);
+ 
+      if (model_prediction != expected_prediction) errors++;
+      outputs++;
     }
+    float error_rate = float(errors) * 100 / outputs;
+    std::cout << "INFO: Total errors: " << errors << " (" << outputs << ")" << std::endl;
+    std::cout << "INFO: Error rate: " << error_rate << "%" << std::endl;
+    std::cout << "INFO: Accuracy: " << 100 - error_rate << "%" << std::endl;
+
     fin.close();
     fpr.close();
   } else {
@@ -109,17 +132,17 @@ int main(int argc, char **argv)
     //hls-fpga-machine-learning insert zero
     input_t input_1[N_INPUT_1_1];
     nnet::fill_zero<input_t, N_INPUT_1_1>(input_1);
-    result_t layer7_out[N_LAYER_5];
+    result_t layer6_out[N_LAYER_5];
 
     //hls-fpga-machine-learning insert top-level-function
     unsigned short size_in1,size_out1;
-    myproject(input_1,layer7_out,size_in1,size_out1);
+    myproject(input_1,layer6_out);
 
     //hls-fpga-machine-learning insert output
-    nnet::print_result<result_t, N_LAYER_5>(layer7_out, std::cout, true);
+    nnet::print_result<result_t, N_LAYER_5>(layer6_out, std::cout, true);
 
     //hls-fpga-machine-learning insert tb-output
-    nnet::print_result<result_t, N_LAYER_5>(layer7_out, fout);
+    nnet::print_result<result_t, N_LAYER_5>(layer6_out, fout);
 
   }
 

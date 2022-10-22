@@ -4,7 +4,7 @@
 #include "nnet_common.h"
 #include "nnet_mult.h"
 #include "nnet_dense_latency.h"
-#include "nnet_dense_resource.h"
+//#include "nnet_dense_resource.h"
 #include "nnet_helpers.h"
 #include "ac_channel.h"
 #include <math.h>
@@ -46,7 +46,8 @@ void dense(
     if (CONFIG_T::strategy == nnet::latency) {
         dense_latency<data_T, res_T, CONFIG_T>(data, res, weights, biases);
     } else {
-        dense_resource<data_T, res_T, CONFIG_T>(data, res, weights, biases);
+;
+        //dense_resource<data_T, res_T, CONFIG_T>(data, res, weights, biases);
     }
 }
 

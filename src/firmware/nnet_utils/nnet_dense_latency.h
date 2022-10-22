@@ -54,7 +54,7 @@ void dense_latency(
 
     //int multiplier_limit  = ceil(float(CONFIG_T::n_in*CONFIG_T::n_out) / float(CONFIG_T::reuse_factor)) - floor(float(CONFIG_T::n_zeros) / float(CONFIG_T::reuse_factor));
     constexpr int multiplier_limit  = ((CONFIG_T::n_in*CONFIG_T::n_out)/CONFIG_T::reuse_factor) - CONFIG_T::n_zeros / CONFIG_T::reuse_factor;
-    CONFIG_T::template product<data_T, typename CONFIG_T::weight_t>::limit(multiplier_limit);
+//    CONFIG_T::template product<data_T, typename CONFIG_T::weight_t>::limit(multiplier_limit);
 
     // Do the matrix-multiply
     #pragma hls_unroll
@@ -63,7 +63,7 @@ void dense_latency(
         #pragma hls_unroll
         Product2: for(int jj = 0; jj < CONFIG_T::n_out; jj++) {
         int index = ii*CONFIG_T::n_out+jj;
-        mult[index] = CONFIG_T::template product<data_T, typename CONFIG_T::weight_t>::product(cache, weights[index]);
+        mult[index] = CONFIG_T::template product<data_T, typename CONFIG_T::weight_t, typename CONFIG_T::accum_t>::product(cache, weights[index]);
         }
     }
 

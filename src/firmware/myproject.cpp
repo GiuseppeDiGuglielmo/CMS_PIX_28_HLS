@@ -27,7 +27,7 @@
 //hls-fpga-machine-learning insert IFSynPragmas
 void CCS_BLOCK(myproject)(
     input_t input_1[N_INPUT_1_1],
-    result_t layer7_out[N_LAYER_5]
+    result_t layer6_out[N_LAYER_5]
 ) {
 
     //hls-fpga-machine-learning insert IO
@@ -35,9 +35,6 @@ void CCS_BLOCK(myproject)(
     #pragma HLS ARRAY_PARTITION variable=layer7_out complete dim=0
     #pragma HLS INTERFACE ap_vld port=input_1,layer7_out 
     #pragma HLS PIPELINE 
-
-    const_size_in_1 = N_INPUT_1_1;
-    const_size_out_1 = N_LAYER_5;
 
 #ifndef __SYNTHESIS__
     static bool loaded_weights = false;
@@ -73,10 +70,10 @@ void CCS_BLOCK(myproject)(
     #pragma HLS ARRAY_PARTITION variable=layer5_out complete dim=0
     nnet::dense<layer4_t, layer5_t, config5>(layer4_out, layer5_out, w5, b5); // dense2
 
-    layer6_t layer6_out[N_LAYER_5];
+//    layer6_t layer6_out[N_LAYER_5];
     #pragma HLS ARRAY_PARTITION variable=layer6_out complete dim=0
-    nnet::linear<layer5_t, layer6_t, linear_config6>(layer5_out, layer6_out); // dense2_linear
+    nnet::linear<layer5_t, result_t, linear_config6>(layer5_out, layer6_out); // dense2_linear
 
-    nnet::softmax<layer6_t, result_t, softmax_config7>(layer6_out, layer7_out); // softmax
+//    nnet::softmax<layer6_t, result_t, softmax_config7>(layer6_out, layer7_out); // softmax
 
 }
