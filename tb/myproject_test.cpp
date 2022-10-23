@@ -31,10 +31,11 @@ namespace nnet {
     size_t trace_type_size = sizeof(double);
 }
 
-template <class T, int N>
+template <class T, int N, int MIN>
 unsigned argmax(T args[N]) {
   unsigned max_idx = 0;
-  T max;
+  T max = MIN;
+//  max.set_val<AC_VAL_MIN>();
   for (unsigned i = 0; i < N; i++) {
     if(args[i] > max) {
       max = args[i];
@@ -108,7 +109,7 @@ CCS_MAIN(int argc, char *argv[])
       std::cout << expected_prediction << " ";
       std::cout << std::endl;
       std::cout << "INFO: Model prediction   : ";
-      unsigned model_prediction = argmax<result_t, N_LAYER_5>(layer6_out);
+      unsigned model_prediction = argmax<result_t, N_LAYER_5, -31>(layer6_out);
       std::cout << model_prediction << " | ";
       //hls-fpga-machine-learning insert quantized
       nnet::print_result<result_t, N_LAYER_5>(layer6_out, std::cout, true);
