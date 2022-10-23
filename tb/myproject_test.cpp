@@ -45,6 +45,20 @@ unsigned argmax(T args[N]) {
   return max_idx;
 }
 
+template <int N>
+unsigned argmax_vector(std::vector<float> args) {
+  unsigned max_idx = 0;
+  float max = std::numeric_limits<float>::min();
+  for (unsigned i = 0; i < N; i++) {
+    if(args[i] > max) {
+      max = args[i];
+      max_idx = i;
+    }
+  }
+  return max_idx;
+}
+
+
 CCS_MAIN(int argc, char *argv[])
 {
   //load input data from text file
@@ -105,7 +119,7 @@ CCS_MAIN(int argc, char *argv[])
 
       std::cout << "INFO: Expected prediction: ";
       //hls-fpga-machine-learning insert predictions
-      unsigned expected_prediction = pr[0];
+      unsigned expected_prediction = argmax_vector<N_LAYER_5>(pr);
       std::cout << expected_prediction << " ";
       std::cout << std::endl;
       std::cout << "INFO: Model prediction   : ";
@@ -136,7 +150,6 @@ CCS_MAIN(int argc, char *argv[])
     result_t layer6_out[N_LAYER_5];
 
     //hls-fpga-machine-learning insert top-level-function
-    unsigned short size_in1,size_out1;
     myproject(input_1,layer6_out);
 
     //hls-fpga-machine-learning insert output
