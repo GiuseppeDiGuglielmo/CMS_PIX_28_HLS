@@ -29,7 +29,7 @@
 // Prototype of top level function for C-synthesis
 void myproject(
     input_t input_1[N_INPUT_1_1],
-    result_t layer7_out[N_LAYER_5]
+    result_t layer6_out[N_LAYER_5]
 );
 
 #endif

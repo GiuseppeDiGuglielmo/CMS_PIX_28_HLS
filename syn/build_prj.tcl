@@ -82,6 +82,9 @@ switch $opt(version) {
     "v01" {
         solution options set /Input/CompilerFlags {-DV01}
     }
+    "v02" {
+        solution options set /Input/CompilerFlags {-DV02}
+    }
     default {
         # defaults
     }
@@ -134,6 +137,13 @@ switch $opt(version) {
         solution design set {nnet::dense<ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config2>} -inline
         solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config5>} -inline
     }
+    "v02" {
+        solution design set myproject -top
+        solution design set {nnet::relu<ac_fixed<16, 6, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
+        solution design set ac::fx_div<8> -inline
+        solution design set {nnet::dense<ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config2>} -inline
+        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config5>} -inline
+    }
     default {
         # defaults
     }
@@ -179,9 +189,9 @@ if {$opt(hsynth)} {
 
     directive set -CLOCKS { \
         clk { \
-            -CLOCK_PERIOD 156.25 \
+            -CLOCK_PERIOD 25.0 \
             -CLOCK_EDGE rising \
-            -CLOCK_HIGH_TIME 78.125 \
+            -CLOCK_HIGH_TIME 12.5 \
             -CLOCK_OFFSET 0.000000 \
             -CLOCK_UNCERTAINTY 0.0 \
             -RESET_KIND sync \
@@ -196,6 +206,9 @@ if {$opt(hsynth)} {
 
     switch $opt(version) {
         "v01" {
+            directive set /myproject -MAP_TO_MODULE {}
+        }
+        "v02" {
             directive set /myproject -MAP_TO_MODULE {}
         }
         default {
@@ -213,8 +226,12 @@ if {$opt(hsynth)} {
     # Top-Module I/O
     switch $opt(version) {
         "v01" {
-            directive set /myproject/inputs:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
-            directive set /myproject/results:rsc -MAP_TO_MODULE ccs_ioport.ccs_out
+            directive set /myproject/input_1:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+            directive set /myproject/layer6_out:rsc -MAP_TO_MODULE ccs_ioport.ccs_out
+        }
+        "v02" {
+            directive set /myproject/input_1:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+            directive set /myproject/layer6_out:rsc -MAP_TO_MODULE ccs_ioport.ccs_out
         }
         default {
             # defaults
@@ -224,6 +241,9 @@ if {$opt(hsynth)} {
     # Sub-modules
     switch $opt(version) {
         "v01" {
+            # defaults
+        }
+        "v02" {
             # defaults
         }
         default {
@@ -236,6 +256,9 @@ if {$opt(hsynth)} {
         "v01" {
             # defaults
         }
+        "v02" {
+            # defaults
+        }
         default {
             # defaults
         }
@@ -244,6 +267,21 @@ if {$opt(hsynth)} {
     # Arrays
     switch $opt(version) {
         "v01" {
+            directive set /myproject/w2.rom:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/w5.rom:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/nnet::dense_latency<input_t,layer2_t,config2>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/nnet::dense_latency<layer4_t,layer5_t,config5>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
+
+            directive set /myproject/core/layer2_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/layer3_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/layer4_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/layer5_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:mult:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:acc:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<layer4_t,layer5_t,config5>:mult:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<layer4_t,layer5_t,config5>:acc:rsc -MAP_TO_MODULE {[Register]}
+        }
+        "v02" {
             directive set /myproject/w2.rom:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/w5.rom:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/nnet::dense_latency<input_t,layer2_t,config2>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
@@ -279,6 +317,25 @@ if {$opt(hsynth)} {
             directive set /myproject/core/Accum2#1 -UNROLL no
             directive set /myproject/core/Result#1 -UNROLL no
             directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -PIPELINE_INIT_INTERVAL 0
+        }
+        "v02" {
+            directive set /myproject/core/Product1 -UNROLL yes
+            directive set /myproject/core/Product2 -UNROLL yes
+            directive set /myproject/core/Accum1 -UNROLL yes
+            directive set /myproject/core/Accum2 -UNROLL yes
+            directive set /myproject/core/Result -UNROLL yes
+            directive set /myproject/core/nnet::relu<layer3_t,layer4_t,relu_config4>:for -UNROLL yes
+            directive set /myproject/core/Product1#1 -UNROLL yes
+            directive set /myproject/core/Product2#1 -UNROLL yes
+            directive set /myproject/core/Accum1#1 -UNROLL yes
+            directive set /myproject/core/Accum2#1 -UNROLL yes
+            directive set /myproject/core/Result#1 -UNROLL yes
+
+            directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -UNROLL yes
+            directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -UNROLL yes
+            directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/main -PIPELINE_INIT_INTERVAL 1
         }
         default {
             # defaults
