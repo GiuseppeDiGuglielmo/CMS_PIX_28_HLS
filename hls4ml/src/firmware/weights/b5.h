@@ -9,7 +9,9 @@
 #ifndef __SYNTHESIS__
 bias5_t b5[3];
 #else
-bias5_t b5[3] = {0.1250, -0.2500, 0.1875};
+bias5_t b5[3] = {
+#include "b5.txt"
+};
 #endif
 
 #endif
