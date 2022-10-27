@@ -28,6 +28,13 @@
 void CCS_BLOCK(myproject)(
     input_t input_1[N_INPUT_1_1],
     result_t layer6_out[N_LAYER_5]
+#if defined(V03)
+    ,
+    weight2_t w2[1792],
+    bias2_t b2[128],
+    weight5_t w5[384],
+    bias5_t b5[3]
+#endif
 ) {
 
     //hls-fpga-machine-learning insert IO
@@ -36,6 +43,7 @@ void CCS_BLOCK(myproject)(
     #pragma HLS INTERFACE ap_vld port=input_1,layer7_out 
     #pragma HLS PIPELINE 
 
+#if defined(V01) || defined(V02)
 #ifndef __SYNTHESIS__
     static bool loaded_weights = false;
     if (!loaded_weights) {
@@ -46,6 +54,7 @@ void CCS_BLOCK(myproject)(
         nnet::load_weights_from_txt<bias5_t, 3>(b5, "b5.txt");
         loaded_weights = true;
     }
+#endif
 #endif
 
     // ****************************************

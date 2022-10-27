@@ -30,6 +30,13 @@
 void myproject(
     input_t input_1[N_INPUT_1_1],
     result_t layer6_out[N_LAYER_5]
+#if defined(V03)
+    ,
+    weight2_t w2[1792],
+    bias2_t b2[128],
+    weight5_t w5[384],
+    bias5_t b5[3]
+#endif
 );
 
 #endif

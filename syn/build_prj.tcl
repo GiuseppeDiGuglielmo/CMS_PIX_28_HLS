@@ -85,6 +85,9 @@ switch $opt(version) {
     "v02" {
         solution options set /Input/CompilerFlags {-DV02}
     }
+    "v03" {
+        solution options set /Input/CompilerFlags {-DV03}
+    }
     default {
         # defaults
     }
@@ -138,6 +141,13 @@ switch $opt(version) {
         solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config5>} -inline
     }
     "v02" {
+        solution design set myproject -top
+        solution design set {nnet::relu<ac_fixed<16, 6, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
+        solution design set ac::fx_div<8> -inline
+        solution design set {nnet::dense<ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config2>} -inline
+        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config5>} -inline
+    }
+    "v03" {
         solution design set myproject -top
         solution design set {nnet::relu<ac_fixed<16, 6, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
         solution design set ac::fx_div<8> -inline
@@ -211,6 +221,9 @@ if {$opt(hsynth)} {
         "v02" {
             directive set /myproject -MAP_TO_MODULE {}
         }
+        "v03" {
+            directive set /myproject -MAP_TO_MODULE {}
+        }
         default {
             # defaults
         }
@@ -233,6 +246,14 @@ if {$opt(hsynth)} {
             directive set /myproject/input_1:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
             directive set /myproject/layer6_out:rsc -MAP_TO_MODULE ccs_ioport.ccs_out
         }
+        "v03" {
+            directive set /myproject/input_1:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+            directive set /myproject/layer6_out:rsc -MAP_TO_MODULE ccs_ioport.ccs_out
+            directive set /myproject/w2:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+            directive set /myproject/b2:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+            directive set /myproject/w5:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+            directive set /myproject/b5:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
+        }
         default {
             # defaults
         }
@@ -246,6 +267,9 @@ if {$opt(hsynth)} {
         "v02" {
             # defaults
         }
+        "v03" {
+            # defaults
+        }
         default {
             # defaults
         }
@@ -257,6 +281,9 @@ if {$opt(hsynth)} {
             # defaults
         }
         "v02" {
+            # defaults
+        }
+        "v03" {
             # defaults
         }
         default {
@@ -287,6 +314,16 @@ if {$opt(hsynth)} {
             directive set /myproject/nnet::dense_latency<input_t,layer2_t,config2>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/nnet::dense_latency<layer4_t,layer5_t,config5>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
 
+            directive set /myproject/core/layer2_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/layer3_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/layer4_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/layer5_out:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:mult:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:acc:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<layer4_t,layer5_t,config5>:mult:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<layer4_t,layer5_t,config5>:acc:rsc -MAP_TO_MODULE {[Register]}
+        }
+        "v03" {
             directive set /myproject/core/layer2_out:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/core/layer3_out:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/core/layer4_out:rsc -MAP_TO_MODULE {[Register]}
@@ -335,6 +372,35 @@ if {$opt(hsynth)} {
             directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -UNROLL yes
             directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -PIPELINE_INIT_INTERVAL 0
             directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -PIPELINE_INIT_INTERVAL 0
+
+            directive set /myproject/core/main -PIPELINE_INIT_INTERVAL 1
+        }
+        "v03" {
+            directive set /myproject/core/Product1 -UNROLL yes
+            directive set /myproject/core/Product2 -UNROLL yes
+            directive set /myproject/core/Accum1 -UNROLL yes
+            directive set /myproject/core/Accum2 -UNROLL yes
+            directive set /myproject/core/Result -UNROLL yes
+            directive set /myproject/core/nnet::relu<layer3_t,layer4_t,relu_config4>:for -UNROLL yes
+            directive set /myproject/core/Product1#1 -UNROLL yes
+            directive set /myproject/core/Product2#1 -UNROLL yes
+            directive set /myproject/core/Accum1#1 -UNROLL yes
+            directive set /myproject/core/Accum2#1 -UNROLL yes
+            directive set /myproject/core/Result#1 -UNROLL yes
+
+            directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -UNROLL yes
+            directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -UNROLL yes
+            directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/main -PIPELINE_INIT_INTERVAL 1
+
+
+            directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/nnet::linear<layer2_t,layer3_t,linear_config3>:for -UNROLL yes
+            directive set /myproject/core/nnet::relu<layer3_t,layer4_t,relu_config4>:for -UNROLL yes
+            directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/nnet::linear<layer5_t,result_t,linear_config6>:for -UNROLL yes
+
             directive set /myproject/core/main -PIPELINE_INIT_INTERVAL 1
         }
         default {
