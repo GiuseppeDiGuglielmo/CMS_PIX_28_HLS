@@ -26,8 +26,8 @@ struct config2 : nnet::dense_config {
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned strategy = nnet::latency;
     static const unsigned reuse_factor = 1;
-    static const unsigned n_zeros = 148;
-    static const unsigned n_nonzeros = 748;
+    static const unsigned n_zeros = 46;
+    static const unsigned n_nonzeros = 978;
     static const bool merged_relu = false;
     static const bool store_weights_in_bram = false;
     typedef ac_fixed<16,8,true> accum_t;
@@ -65,8 +65,8 @@ struct config6 : nnet::dense_config {
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned strategy = nnet::latency;
     static const unsigned reuse_factor = 1;
-    static const unsigned n_zeros = 8;
-    static const unsigned n_nonzeros = 184;
+    static const unsigned n_zeros = 11;
+    static const unsigned n_nonzeros = 181;
     static const bool merged_relu = true;
     static const bool store_weights_in_bram = false;
     typedef ac_fixed<16,8,true> accum_t;

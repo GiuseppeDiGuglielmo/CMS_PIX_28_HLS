@@ -32,7 +32,7 @@ void myproject(
     result_t layer7_out[N_LAYER_5]
 #if defined(V03)
     ,
-    weight2_t w2[896],
+    weight2_t w2[1024],
     bias2_t b2[64],
     weight5_t w5[192],
     bias5_t b5[3]

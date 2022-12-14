@@ -30,7 +30,7 @@ void CCS_BLOCK(myproject)(
     result_t layer7_out[N_LAYER_5]
 #if defined(V03)
     ,
-    weight2_t w2[896],
+    weight2_t w2[1024],
     bias2_t b2[64],
     weight5_t w5[192],
     bias5_t b5[3]
@@ -48,7 +48,7 @@ void CCS_BLOCK(myproject)(
     static bool loaded_weights = false;
     if (!loaded_weights) {
         //hls-fpga-machine-learning insert load weights
-        nnet::load_weights_from_txt<weight2_t, 896>(w2, "w2.txt");
+        nnet::load_weights_from_txt<weight2_t, 1024>(w2, "w2.txt");
         nnet::load_weights_from_txt<bias2_t, 64>(b2, "b2.txt");
         nnet::load_weights_from_txt<weight5_t, 192>(w5, "w5.txt");
         nnet::load_weights_from_txt<bias5_t, 3>(b5, "b5.txt");
