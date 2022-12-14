@@ -7,9 +7,9 @@
 #define W5_H_
 
 #ifndef __SYNTHESIS__
-weight5_t w5[192];
+static weight5_t w5[192];
 #else
-weight5_t w5[192] = {
+static weight5_t w5[192] = {
 #include "w5.txt"
 };
 #endif

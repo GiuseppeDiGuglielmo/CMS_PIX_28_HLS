@@ -7,9 +7,9 @@
 #define B5_H_
 
 #ifndef __SYNTHESIS__
-bias5_t b5[3];
+static bias5_t b5[3];
 #else
-bias5_t b5[3] = {
+static bias5_t b5[3] = {
 #include "b5.txt"
 };
 #endif

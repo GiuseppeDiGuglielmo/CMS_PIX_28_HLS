@@ -22,6 +22,11 @@
 //batch_normalization_bias_t b4[128];
 //weight6_t w6[384];
 //bias6_t b6[3];
+#include "weights/w2.h"
+#include "weights/b2.h"
+#include "weights/w5.h"
+#include "weights/b5.h"
+
 
 #define CHECKPOINT 1
 
@@ -73,17 +78,20 @@ CCS_MAIN(int argc, char *argv[])
 #endif
   std::ofstream fout(RESULTS_LOG);
 
-//#ifndef __SYNTHESIS__
-//    static bool loaded_weights = false;
-//    if (!loaded_weights) {
-//        //hls-fpga-machine-learning insert load weights
-//        nnet::load_weights_from_txt<weight2_t, 1792>(w2, "w2.txt");
-//        nnet::load_weights_from_txt<bias2_t, 128>(b2, "b2.txt");
-//        nnet::load_weights_from_txt<weight5_t, 384>(w5, "w5.txt");
-//        nnet::load_weights_from_txt<bias5_t, 3>(b5, "b5.txt");
-//        loaded_weights = true;
-//    }
-//#endif
+#if defined(V03)
+#ifndef __SYNTHESIS__
+    static bool loaded_weights = false;
+    if (!loaded_weights) {
+        //hls-fpga-machine-learning insert load weights
+        nnet::load_weights_from_txt<weight2_t, 1024>(w2, "w2.txt");
+        nnet::load_weights_from_txt<bias2_t, 64>(b2, "b2.txt");
+        nnet::load_weights_from_txt<weight5_t, 192>(w5, "w5.txt");
+        nnet::load_weights_from_txt<bias5_t, 3>(b5, "b5.txt");
+        loaded_weights = true;
+    }
+#endif
+#endif
+
 
   std::string iline;
   std::string pline;
@@ -111,26 +119,24 @@ CCS_MAIN(int argc, char *argv[])
       //hls-fpga-machine-learning insert data
       input_t input_1[N_INPUT_1_1];
       nnet::copy_data<float, input_t, 0, N_INPUT_1_1>(in, input_1);
-      result_t layer7_out[N_LAYER_5];
+      result_t layer7_out;
 
       //hls-fpga-machine-learning insert top-level-function
       unsigned short size_in1,size_out1;
-      myproject(input_1,layer7_out);
+      myproject(input_1,layer7_out
+#if defined(V03)
+              , w2, b2, w5, b5
+#endif
+              );
 
-      std::cout << "INFO: Expected prediction: ";
+      std::cout << "INFO: Expected vs. model prediction: ";
       //hls-fpga-machine-learning insert predictions
       unsigned expected_prediction = argmax_vector<N_LAYER_5>(pr);
-      std::cout << expected_prediction << " ";
-      std::cout << std::endl;
-      std::cout << "INFO: Model prediction   : ";
-      unsigned model_prediction = argmax<result_t, N_LAYER_5, -31>(layer7_out);
-      std::cout << model_prediction << " | ";
-      //hls-fpga-machine-learning insert quantized
-      nnet::print_result<result_t, N_LAYER_5>(layer7_out, std::cout, true);
-
+      std::cout << expected_prediction << "/";
+      unsigned model_prediction = layer7_out;
+      std::cout << model_prediction << std::endl;
       //hls-fpga-machine-learning insert tb-output
-      nnet::print_result<result_t, N_LAYER_5>(layer7_out, fout);
- 
+      fout << model_prediction << std::endl;
       if (model_prediction != expected_prediction) errors++;
       outputs++;
     }
@@ -147,16 +153,23 @@ CCS_MAIN(int argc, char *argv[])
     //hls-fpga-machine-learning insert zero
     input_t input_1[N_INPUT_1_1];
     nnet::fill_zero<input_t, N_INPUT_1_1>(input_1);
-    result_t layer7_out[N_LAYER_5];
+    result_t layer7_out;
 
     //hls-fpga-machine-learning insert top-level-function
-    myproject(input_1,layer7_out);
+    myproject(input_1,layer7_out
+#if defined(V03)
+              , w2, b2, w5, b5
+#endif
+            );
 
     //hls-fpga-machine-learning insert output
-    nnet::print_result<result_t, N_LAYER_5>(layer7_out, std::cout, true);
+    //nnet::print_result<result_t, N_LAYER_5>(layer7_out, std::cout, true);
+    std::cout << layer7_out << std::endl;
 
     //hls-fpga-machine-learning insert tb-output
-    nnet::print_result<result_t, N_LAYER_5>(layer7_out, fout);
+    fout << layer7_out << std::endl;
+
+    //nnet::print_result<result_t, N_LAYER_5>(layer7_out, fout);
 
   }
 

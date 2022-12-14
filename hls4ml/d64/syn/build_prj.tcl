@@ -149,7 +149,7 @@ switch $opt(version) {
         solution design set myproject -top
         solution design set {nnet::dense<ac_int<6, false>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config2>} -inline
         solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
-        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config6>} -inline
+        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config6>} -inline
     }
     default {
         # defaults
@@ -324,8 +324,8 @@ if {$opt(hsynth)} {
             directive set /myproject/core/layer4_out:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:mult:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:acc:rsc -MAP_TO_MODULE {[Register]}
-            directive set /myproject/core/nnet::dense_latency<layer4_t,result_t,config6>:mult:rsc -MAP_TO_MODULE {[Register]}
-            directive set /myproject/core/nnet::dense_latency<layer4_t,result_t,config6>:acc:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<layer4_t,layer6_t,config6>:mult:rsc -MAP_TO_MODULE {[Register]}
+            directive set /myproject/core/nnet::dense_latency<layer4_t,layer6_t,config6>:acc:rsc -MAP_TO_MODULE {[Register]}
         }
         default {
             # defaults

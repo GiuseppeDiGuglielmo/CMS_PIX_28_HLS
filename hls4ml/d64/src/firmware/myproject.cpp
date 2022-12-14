@@ -23,11 +23,17 @@
 
 #include <mc_scverify.h>
 
+result_t argmax(layer6_t layer6_out[N_LAYER_6]) {
+    if (layer6_out[0] >= layer6_out[1] && layer6_out[0] >= layer6_out[2]) return 0;
+    else if (layer6_out[1] >= layer6_out[0] && layer6_out[1] >= layer6_out[2]) return 1;
+    else return 2;
+}
+
 #pragma hls_design top
 //hls-fpga-machine-learning insert IFSynPragmas
 void CCS_BLOCK(myproject)(
     input_t input_1[N_INPUT_1_1],
-    result_t layer7_out[N_LAYER_5]
+    result_t &layer7_out
 #if defined(V03)
     ,
     weight2_t w2[1024],
@@ -40,8 +46,8 @@ void CCS_BLOCK(myproject)(
     //hls-fpga-machine-learning insert IO
     #pragma HLS ARRAY_RESHAPE variable=input_1 complete dim=0
     #pragma HLS ARRAY_PARTITION variable=layer7_out complete dim=0
-    #pragma HLS INTERFACE ap_vld port=input_1,layer7_out 
-    #pragma HLS PIPELINE 
+    #pragma HLS INTERFACE ap_vld port=input_1,layer7_out
+    #pragma HLS PIPELINE
 
 #if defined(V01) || defined(V02)
 #ifndef __SYNTHESIS__
@@ -75,9 +81,11 @@ void CCS_BLOCK(myproject)(
     #pragma HLS ARRAY_PARTITION variable=layer4_out complete dim=0
     nnet::relu<layer3_t, layer4_t, relu_config4>(layer3_out, layer4_out); // relu1
 
-//    layer6_t layer6_out[N_LAYER_6];
+    layer6_t layer6_out[N_LAYER_6];
     #pragma HLS ARRAY_PARTITION variable=layer6_out complete dim=0
-    nnet::dense<layer4_t, result_t, config6>(layer4_out, layer7_out, w5, b5); // dense2
+    nnet::dense<layer4_t, layer6_t, config6>(layer4_out, layer6_out, w5, b5); // dense2
+
+    layer7_out = argmax(layer6_out);
 
 //    nnet::softmax<layer6_t, result_t, softmax_config7>(layer6_out, layer7_out); // softmax
 

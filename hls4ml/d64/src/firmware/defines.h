@@ -27,6 +27,6 @@ typedef ac_fixed<5,1,true> weight5_t;
 typedef ac_fixed<5,1,true> bias5_t;
 typedef ac_fixed<16,8,true> layer6_t;
 typedef ac_fixed<16,6,true> softmax_default_t;
-typedef ac_fixed<16,6,true> result_t;
+typedef ac_int<2,false> result_t;
 
 #endif

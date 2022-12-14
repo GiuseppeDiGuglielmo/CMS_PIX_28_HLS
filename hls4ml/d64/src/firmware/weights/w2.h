@@ -7,9 +7,9 @@
 #define W2_H_
 
 #ifndef __SYNTHESIS__
-weight2_t w2[1024];
+static weight2_t w2[1024];
 #else
-weight2_t w2[1024] = {
+static weight2_t w2[1024] = {
 #include "w2.txt"
 };
 #endif

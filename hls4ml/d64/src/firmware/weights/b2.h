@@ -7,9 +7,9 @@
 #define B2_H_
 
 #ifndef __SYNTHESIS__
-bias2_t b2[64];
+static bias2_t b2[64];
 #else
-bias2_t b2[64] = {
+static bias2_t b2[64] = {
 #include "b2.txt"
 };
 #endif

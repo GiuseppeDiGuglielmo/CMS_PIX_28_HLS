@@ -45,7 +45,7 @@ CXX_FLAGS += -Wno-narrowing
 CXX_FLAGS += -std=c++11
 #CXX_FLAGS += -g -O0
 CXX_FLAGS += -O3
-CXX_FLAGS += -DV01
+CXX_FLAGS += -DV03
 
 
 
