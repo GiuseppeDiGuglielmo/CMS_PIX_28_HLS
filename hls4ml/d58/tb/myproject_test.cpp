@@ -169,6 +169,7 @@ CCS_MAIN(int argc, char *argv[])
 
   fout.close();
   std::cout << "INFO: Saved inference results to file: " << RESULTS_LOG << std::endl;
+  std::cout << "INFO: Design d58 done!" << std::endl;
 
   return 0;
 }
