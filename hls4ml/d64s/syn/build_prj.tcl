@@ -135,21 +135,24 @@ go analyze
 switch $opt(version) {
     "v01" {
         solution design set myproject -top
+        solution design set {nnet::dense<ac_int<6, false>, ac_fixed<10, 5, true, AC_TRN, AC_WRAP>, config2>} -inline
+        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config6>} -inline
         solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
-        solution design set {nnet::dense<ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config2>} -inline
-        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config6>} -inline
+        solution design set ac::fx_div<8> -inline
     }
     "v02" {
         solution design set myproject -top
+        solution design set {nnet::dense<ac_int<6, false>, ac_fixed<10, 5, true, AC_TRN, AC_WRAP>, config2>} -inline
+        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config6>} -inline
         solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
-        solution design set {nnet::dense<ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config2>} -inline
-        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 6, true, AC_TRN, AC_WRAP>, config6>} -inline
+        solution design set ac::fx_div<8> -inline
     }
     "v03" {
         solution design set myproject -top
-        solution design set {nnet::dense<ac_int<6, false>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config2>} -inline
-        solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
+        solution design set {nnet::dense<ac_int<6, false>, ac_fixed<10, 5, true, AC_TRN, AC_WRAP>, config2>} -inline
         solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config6>} -inline
+        solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
+        solution design set ac::fx_div<8> -inline
     }
     default {
         # defaults
