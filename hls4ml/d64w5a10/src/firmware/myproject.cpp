@@ -20,7 +20,7 @@
 
 #include "myproject.h"
 #include "parameters.h"
-
+ 
 #include <mc_scverify.h>
 
 result_t argmax(layer6_t layer6_out[N_LAYER_6]) {
