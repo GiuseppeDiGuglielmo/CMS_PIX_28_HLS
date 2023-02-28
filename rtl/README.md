@@ -1,5 +1,7 @@
 # Design points
 
+See also this [result summary](https://fermicloud-my.sharepoint.com/:x:/g/personal/gdg_services_fnal_gov/EdJUmntd_xJAkSvxnQh-RBYBDfEPNP56Mq_f-1LgF-4rDQ?e=aIci9G).
+
 ||design|latency|II|inputs|outputs|hidden neurons|weights|activations|workspace|notes|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
 ||`v01`|-|-|||||||I/O wires, hardcoded weights, no unrolling|
