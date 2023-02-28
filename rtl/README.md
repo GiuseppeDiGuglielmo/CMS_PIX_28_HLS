@@ -1,27 +1,17 @@
 # Design points
 
-- `v01` hls4ml implementation, all of the loops are rolled, maximum latency, hardcoded weights, I/O over wires.
-- `v02` hls4ml implementation, all of the loops are unrollend, latency=1, II=1, hardcoded weights, I/O over wires.
-- `v03` hls4ml implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.
-- `v03b` :medal_sports: **hls4ml implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.**
-  - **Reduced-size layers (64).**
-  - **6bx16 in and 2bx1 out.**
-  - **Weights 6b, activation 16b.**
-- `v03c` hls4ml implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.
-  - Reduced-size layers (60).
-  - 6bx16 in and 2bx1 out.
-  - Weights 6b, activation 16b.
-- `v03d` hls4ml implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.
-  - Reduced-size layers (58).
-  - 6bx16 in and 2bx1 out.
-  - Weights 6b, activation 16b.
-- `v03e` hls4ml implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.
-  - Reduced-size layers (64).
-  - 6bx16 in and 2bx1 out.
-  - Weights 6b, activation 10b
-- `v03f` hls4ml implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.
-  - Reduced-size layers (64).
-  - 6bx16 in and 2bx1 out.
-  - Weights 4b, activation 8b
-- `v04` Custom implementation, all of the loops are unrollend, latency=1, II=1, programmable weights, I/O over wires.
-
+||design|latency|II|inputs|outputs|hidden neurons|weights|activations|workspace|notes|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
+||`v01`|-|-|||||||I/O wires, hardcoded weights, no unrolling|
+||`v02`|1|1|||||||I/O wires, hardcoded weights|
+||`v03`|1|1|||||||I/O wires, programmable weights|
+|:medal_sports:|`v03b`|1|1|16x6b (96)|1x2b (2)|64|5b (6,415) |16b|d64w5a16|I/O wires, programmable weights|
+||`v03c`|1|1|16x6b (96)|1x2b (2)|60|5b (6,015)|16b|d60w5a16|I/O wires, programmable weights|
+||`v03d`|1|1|16x6b (96)|1x2b (2)|58|5b (5,815)|16b|d58w5a16|I/O wires, programmable weights|
+||`v03e`|1|1|16x6b (96)|1x2b (2)|64|5b (6,415) |10b|d64w5a10|I/O wires, programmable weights|
+||`v03f`|1|1|16x6b (96)|1x2b (2)|60|5b (6,015)|10b|d60w5a10|I/O wires, programmable weights|
+||`v03g`|1|1|16x6b (96)|1x2b (2)|58|5b (5,815)|10b|d58w5a10|I/O wires, programmable weights|
+||`v03h`|1|1|16x6b (96)|1x2b (2)|64|4b (5,132)|8b|d64w4a8|I/O wires, programmable weights|
+||`v03i`|1|1|16x6b (96)|1x2b (2)|60|4b (4,812)|8b|d60w4a8|I/O wires, programmable weights|
+||`v03l`|1|1|16x6b (96)|1x2b (2)|58|4b (4,652)|8b|d58w4a8|I/O wires, programmable weights|
+||`v04`|1|1|14x16b (224)|3x16b (48)|128|5b (11,535)|16b|custom|I/O wires, programmable weights|
