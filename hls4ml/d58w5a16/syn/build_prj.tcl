@@ -21,7 +21,7 @@ solution options set /Input/CppStandard c++11
 #solution options set /Output/OutputVHDL false
 #solution options set /TextEditor/FontSize 9
 #solution options set /Input/TargetPlatform x86_64
-flow package require /SCVerify
+#flow package require /SCVerify
 #flow package require /UVM
 
 #if {$opt(asic) > 0} {
@@ -48,14 +48,14 @@ directive set -REGISTER_THRESHOLD 245760
 #directive set -TIMING_CHECKS true
 #directive set -MUXPATH true
 #directive set -REALLOC true
-directive set -UNROLL no
+#directive set -UNROLL no
 #directive set -IO_MODE super
 #directive set -CHAN_IO_PROTOCOL standard
 #directive set -ARRAY_SIZE 1024
 #directive set -REGISTER_IDLE_SIGNAL false
 #directive set -IDLE_SIGNAL {}
 #directive set -STALL_FLAG false
-directive set -TRANSACTION_DONE_SIGNAL false
+#directive set -TRANSACTION_DONE_SIGNAL false
 #directive set -DONE_FLAG {}
 #directive set -READY_FLAG {}
 #directive set -START_FLAG {}
@@ -86,6 +86,9 @@ switch $opt(version) {
         solution options set /Input/CompilerFlags {-DV02}
     }
     "v03" {
+        solution options set /Input/CompilerFlags {-DV03}
+    }
+    "v03c" {
         solution options set /Input/CompilerFlags {-DV03}
     }
     default {
@@ -147,6 +150,14 @@ switch $opt(version) {
     }
     "v03" {
         solution design set myproject -top
+        solution design set {nnet::dense<ac_int<6, false>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config2>} -inline
+        solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
+        solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config6>} -inline
+    }
+    "v03c" {
+        solution design set myproject -ccore
+        solution design set myproject -combinational
+        solution design set ac::fx_div<8> -inline
         solution design set {nnet::dense<ac_int<6, false>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config2>} -inline
         solution design set {nnet::relu<ac_fixed<16, 8, true, AC_RND_CONV, AC_SAT>, ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, relu_config4>} -inline
         solution design set {nnet::dense<ac_fixed<10, 0, false, AC_RND_CONV, AC_SAT>, ac_fixed<16, 8, true, AC_TRN, AC_WRAP>, config6>} -inline
@@ -221,6 +232,9 @@ if {$opt(hsynth)} {
         "v03" {
             directive set /myproject -MAP_TO_MODULE {}
         }
+        "v03c" {
+            #directive set /myproject -MAP_TO_MODULE {}
+        }
         default {
             # defaults
         }
@@ -251,6 +265,9 @@ if {$opt(hsynth)} {
             directive set /myproject/w5:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
             directive set /myproject/b5:rsc -MAP_TO_MODULE ccs_ioport.ccs_in
         }
+        "v03c" {
+            #
+        }
         default {
             # defaults
         }
@@ -267,6 +284,9 @@ if {$opt(hsynth)} {
         "v03" {
             # defaults
         }
+        "v03c" {
+            # defaults
+        }
         default {
             # defaults
         }
@@ -281,6 +301,9 @@ if {$opt(hsynth)} {
             # defaults
         }
         "v03" {
+            # defaults
+        }
+        "v03c" {
             # defaults
         }
         default {
@@ -326,6 +349,9 @@ if {$opt(hsynth)} {
             directive set /myproject/core/nnet::dense_latency<input_t,layer2_t,config2>:acc:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/core/nnet::dense_latency<layer4_t,layer6_t,config6>:mult:rsc -MAP_TO_MODULE {[Register]}
             directive set /myproject/core/nnet::dense_latency<layer4_t,layer6_t,config6>:acc:rsc -MAP_TO_MODULE {[Register]}
+        }
+        "v03c" {
+            #
         }
         default {
             # defaults
@@ -384,6 +410,11 @@ if {$opt(hsynth)} {
             directive set /myproject/core/Result#1 -UNROLL yes
 
             directive set /myproject/core/main -PIPELINE_INIT_INTERVAL 1
+        }
+        "v03c" {
+            directive set /myproject/core/main -ITERATIONS 1
+            directive set /myproject/core/main -PIPELINE_INIT_INTERVAL 0
+            directive set /myproject/core/main -UNROLL no
         }
         default {
             # defaults

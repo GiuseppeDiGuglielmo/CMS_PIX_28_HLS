@@ -4,7 +4,7 @@ array set opt {
     # = 1 -> Cadence Encounter RTL Compiler
     # = 2 -> Cadence Genus
     # = 3 -> Mentor Oasys RTL
-    version    "v03"
+    version    "v03c"
     debug      0
     asic       3
     csim       0

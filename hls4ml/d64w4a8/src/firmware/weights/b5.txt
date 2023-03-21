@@ -1,1 +1,1 @@
-0.250, -0.500, 0.250
+../../../../weights_txt/d64w4a8/y_local_11/iter_9/b5.txt

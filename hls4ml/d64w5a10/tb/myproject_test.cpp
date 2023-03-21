@@ -122,22 +122,29 @@ CCS_MAIN(int argc, char *argv[])
               , w2, b2, w5, b5
 #endif
               );
-
+#ifdef VERBOSE
       std::cout << "INFO: Expected vs. model prediction: ";
+#endif
       //hls-fpga-machine-learning insert predictions
       unsigned expected_prediction = argmax_vector<N_LAYER_5>(pr);
+#ifdef VERBOSE
       std::cout << expected_prediction << "/";
+#endif
       unsigned model_prediction = layer7_out;
+#ifdef VERBOSE
       std::cout << model_prediction << std::endl;
+#endif
       //hls-fpga-machine-learning insert tb-output
       fout << model_prediction << std::endl;
       if (model_prediction != expected_prediction) errors++;
       outputs++;
     }
     float error_rate = float(errors) * 100 / outputs;
+#ifdef VERBOSE
     std::cout << "INFO: Total errors: " << errors << " (" << outputs << ")" << std::endl;
-    std::cout << "INFO: Error rate: " << error_rate << "%" << std::endl;
-    std::cout << "INFO: Accuracy: " << 100 - error_rate << "%" << std::endl;
+    std::cout << "INFO: Error rate: " << error_rate << " %" << std::endl;
+#endif
+    std::cout << "INFO: Accuracy: " << 100 - error_rate << " %" << std::endl;
 
     fin.close();
     fpr.close();
@@ -169,6 +176,7 @@ CCS_MAIN(int argc, char *argv[])
 
   fout.close();
   std::cout << "INFO: Saved inference results to file: " << RESULTS_LOG << std::endl;
+  std::cout << "INFO: Design d64 done!" << std::endl;
 
   return 0;
 }

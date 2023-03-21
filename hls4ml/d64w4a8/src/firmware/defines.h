@@ -20,13 +20,13 @@ typedef ac_int<6,false> input_t;
 typedef ac_fixed<8,5,true> layer2_t;
 typedef ac_fixed<4,1,true> weight2_t;
 typedef ac_fixed<4,1,true> bias2_t;
-typedef ac_fixed<16,8,AP_RND,AP_SAT> layer3_t;
+typedef ac_fixed<8,5,true> layer3_t;
 typedef ac_fixed<8,0,false,AC_RND_CONV,AC_SAT> layer4_t;
-typedef ac_fixed<10,6,true> layer5_t;
+//typedef ac_fixed<10,6,true> layer5_t;
 typedef ac_fixed<4,1,true> weight5_t;
 typedef ac_fixed<4,1,true> bias5_t;
-typedef ac_fixed<16,8,true> layer6_t;
-typedef ac_fixed<16,6,true> softmax_default_t;
+typedef ac_fixed<8,5,true> layer6_t;
+//typedef ac_fixed<16,6,true> softmax_default_t;
 typedef ac_int<2,false> result_t;
 
 #endif

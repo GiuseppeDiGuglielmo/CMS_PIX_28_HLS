@@ -100,6 +100,10 @@ clean:
 	$(QUIET_CLEAN)rm -rf $(TARGET) *.o *.d
 .PHONY: clean
 
+validation:
+	$(QUIET_RUN)./validation.sh
+.PHONY: validation
+
 ultraclean: clean
 	$(QUIET_CLEAN)rm -rf ./tb_data/*.log *.log *.png ./tb_data/*.mem
 .PHONY: ultraclean
