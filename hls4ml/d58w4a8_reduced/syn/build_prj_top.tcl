@@ -5,7 +5,7 @@ array set opt {
     # = 2 -> Cadence Genus
     # = 3 -> Mentor Oasys RTL
     version    "v03c"
-    debug      0
+    debug      1
     asic       3
     csim       0
     hsynth     1

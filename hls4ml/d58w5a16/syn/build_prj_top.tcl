@@ -11,7 +11,7 @@ array set opt {
     hsynth     1
     rtlsim     0
     validation 0
-    lsynth     0
+    lsynth     1
 }
 
 set project_name "Catapult_asic"
